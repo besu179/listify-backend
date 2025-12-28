@@ -162,6 +162,8 @@ GEM
     parser (3.3.10.0)
       ast (~> 2.4.1)
       racc
+    pg (1.6.2-x64-mingw-ucrt)
+    pg (1.6.2-x86_64-linux)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -305,6 +307,7 @@ DEPENDENCIES
   brakeman
   debug
   kamal
+  pg (>= 1.1)
   puma (>= 5.0)
   rails (~> 8.0.4)
   rubocop-rails-omakase
