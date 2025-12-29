@@ -13,18 +13,20 @@ module ActivityLoggable
     # Plan says: "User 1 liked Review 5".
     # Activity: actor=User1, action="liked_review", target=Review5
 
-    target = self.try(:likeable) || self.try(:commentable) || self.try(:following) || self.try(:song)
+    target = self.try(:likeable) || self.try(:commentable) || self.try(:following) || self.try(:song) || self
 
     # Custom mapping for action names
     action_key = case self.class.name
     when "Like"
-                   "liked_#{self.likeable_type.underscore}"
+                   "liked"
     when "Comment"
-                   "commented_on_#{self.commentable_type.underscore}"
+                   "commented"
     when "Follow"
-                   "followed_user"
+                   "followed"
     when "Review"
-                   "reviewed_song"
+                   "reviewed"
+    when "Collection"
+                   "created_collection"
     else
                    "created_#{self.class.name.underscore}"
     end

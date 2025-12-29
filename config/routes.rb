@@ -32,6 +32,18 @@ Rails.application.routes.draw do
 
       resources :likes, only: [ :create, :destroy ]
       resources :comments, only: [ :create ]
+
+      resources :collections, only: [ :create ] do
+        member do
+          post "items", to: "collections#add_item"
+          delete "items/:song_id", to: "collections#remove_item"
+        end
+      end
+
+      namespace :feed do
+        get :following
+        get :explore
+      end
     end
   end
 
