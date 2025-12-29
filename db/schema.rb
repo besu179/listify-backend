@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_29_123739) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_29_130926) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,6 +42,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_123739) do
     t.index ["jti"], name: "index_jwt_denylists_on_jti"
   end
 
+  create_table "reviews", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "song_id", null: false
+    t.integer "rating"
+    t.text "review_text"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["song_id"], name: "index_reviews_on_song_id"
+    t.index ["user_id", "song_id"], name: "index_reviews_on_user_id_and_song_id", unique: true
+    t.index ["user_id"], name: "index_reviews_on_user_id"
+  end
+
   create_table "songs", force: :cascade do |t|
     t.string "title"
     t.string "artist_name"
@@ -71,5 +83,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_123739) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "reviews", "songs"
+  add_foreign_key "reviews", "users"
   add_foreign_key "songs", "albums"
 end

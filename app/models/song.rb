@@ -3,4 +3,6 @@ class Song < ApplicationRecord
 
   validates :title, presence: true
   validates :artist_name, presence: true
+
+  has_many :reviews, dependent: :destroy
 end
