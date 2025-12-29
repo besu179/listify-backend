@@ -13,6 +13,15 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get "users/me", to: "users#me"
+      resources :users, only: [] do
+        member do
+          post :follow
+          delete :unfollow
+          get :followers
+          get :following
+        end
+      end
+      resources :songs, only: [ :index, :show ]
     end
   end
 

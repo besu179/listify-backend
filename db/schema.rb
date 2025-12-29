@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_29_090953) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_29_123739) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "albums", force: :cascade do |t|
+    t.string "title"
+    t.string "artist_name"
+    t.string "cover_url"
+    t.bigint "deezer_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deezer_id"], name: "index_albums_on_deezer_id"
+  end
 
   create_table "follows", force: :cascade do |t|
     t.integer "follower_id"
@@ -32,6 +42,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_090953) do
     t.index ["jti"], name: "index_jwt_denylists_on_jti"
   end
 
+  create_table "songs", force: :cascade do |t|
+    t.string "title"
+    t.string "artist_name"
+    t.integer "duration_ms"
+    t.bigint "deezer_id"
+    t.string "preview_url"
+    t.bigint "album_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["album_id"], name: "index_songs_on_album_id"
+    t.index ["deezer_id"], name: "index_songs_on_deezer_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -47,4 +70,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_090953) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
+
+  add_foreign_key "songs", "albums"
 end
