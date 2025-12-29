@@ -1,12 +1,14 @@
 Rails.application.routes.draw do
-  devise_for :users, skip: %i[sessions registrations passwords]
+  # Standardizing the Devise routes for API use.
+  # This registers the mapping globally for the /api/v1/auth path.
+  devise_for :users,
+             path: "api/v1/auth",
+             path_names: { sign_in: "login", sign_out: "logout" },
+             controllers: { sessions: "api/v1/auth/sessions" },
+             skip: [ :registrations, :passwords ]
 
   namespace :api do
     namespace :v1 do
-      namespace :auth do
-        post "login", to: "sessions#create"
-        delete "logout", to: "sessions#destroy"
-      end
       get "users/me", to: "users#me"
     end
   end
