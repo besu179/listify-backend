@@ -4,5 +4,7 @@ class Song < ApplicationRecord
   validates :title, presence: true
   validates :artist_name, presence: true
 
+  has_one_attached :cover_art
+
   has_many :reviews, dependent: :destroy
 end

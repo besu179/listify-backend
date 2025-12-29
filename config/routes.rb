@@ -11,6 +11,11 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      resources :notifications, only: [ :index ] do
+        member do
+          patch :read
+        end
+      end
       get "users/me", to: "users#me"
 
       resources :users, only: [] do
