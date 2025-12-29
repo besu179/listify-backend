@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_29_143009) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_29_153404) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -33,6 +33,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_143009) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["deezer_id"], name: "index_albums_on_deezer_id"
+  end
+
+  create_table "collection_items", force: :cascade do |t|
+    t.bigint "collection_id", null: false
+    t.bigint "song_id", null: false
+    t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_id", "song_id"], name: "index_collection_items_on_collection_id_and_song_id", unique: true
+    t.index ["collection_id"], name: "index_collection_items_on_collection_id"
+    t.index ["song_id"], name: "index_collection_items_on_song_id"
+  end
+
+  create_table "collections", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title"
+    t.text "description"
+    t.boolean "public", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_collections_on_user_id"
   end
 
   create_table "comments", force: :cascade do |t|
@@ -117,6 +138,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_143009) do
   end
 
   add_foreign_key "activities", "users", column: "actor_id"
+  add_foreign_key "collection_items", "collections"
+  add_foreign_key "collection_items", "songs"
+  add_foreign_key "collections", "users"
   add_foreign_key "comments", "users"
   add_foreign_key "likes", "users"
   add_foreign_key "reviews", "songs"
