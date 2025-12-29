@@ -16,7 +16,7 @@ module Api
         def respond_with(resource, _opts = {})
           if resource.persisted?
             render json: {
-              status: { code: 200, message: "Signed up successfully." },
+              status: { code: 201, message: "Signed up successfully." },
               user: {
                 id: resource.id,
                 username: resource.username,
@@ -24,7 +24,7 @@ module Api
                 bio: resource.bio,
                 profile_picture_url: resource.profile_picture_url
               }
-            }, status: :ok
+            }, status: :created
           else
             render json: {
               status: { message: "User could not be created successfully. #{resource.errors.full_messages.to_sentence}" }
