@@ -8,7 +8,8 @@ module Api
           id: current_user.id,
           username: current_user.username,
           email: current_user.email,
-          bio: current_user.bio
+          bio: current_user.bio,
+          profile_picture_url: current_user.profile_picture_url
         }
       end
     end
