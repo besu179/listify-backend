@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
   # Standardizing the Devise routes for API use.
-  # This registers the mapping globally for the /api/v1/auth path.
   devise_for :users,
              path: "api/v1/auth",
              path_names: { sign_in: "login", sign_out: "logout" },
@@ -13,6 +12,26 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get "users/me", to: "users#me"
+
+      resources :users, only: [] do
+        member do
+          post :follow
+          delete :unfollow
+          get :followers
+          get :following
+        end
+      end
+
+      resources :songs, only: [ :index, :show ] do
+        resources :reviews, only: [ :index ]
+      end
+
+      resources :reviews, only: [ :create, :update, :destroy ] do
+        resources :comments, only: [ :index ], module: :reviews
+      end
+
+      resources :likes, only: [ :create, :destroy ]
+      resources :comments, only: [ :create ]
     end
   end
 

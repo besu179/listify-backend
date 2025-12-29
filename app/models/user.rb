@@ -18,6 +18,9 @@ class User < ApplicationRecord
   has_many :followers, through: :passive_follows, source: :follower
 
   has_many :reviews, dependent: :destroy
+  has_many :likes, dependent: :destroy
+  has_many :comments, dependent: :destroy
+  has_many :activities, foreign_key: :actor_id, dependent: :destroy
 
   # Validations
   validates :username, presence: true, uniqueness: true
