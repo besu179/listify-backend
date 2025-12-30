@@ -45,7 +45,7 @@ module Api
       end
 
       def following
-        render json: @user.followings.select(:id, :username, :profile_picture_url), status: :ok
+        render json: @user.following.select(:id, :username, :profile_picture_url), status: :ok
       end
 
       private
