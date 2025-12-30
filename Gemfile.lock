@@ -79,6 +79,7 @@ GEM
     bcrypt_pbkdf (1.1.2-x64-mingw-ucrt)
     benchmark (0.5.0)
     bigdecimal (4.0.1)
+    blueprinter (1.2.1)
     bootsnap (1.20.0)
       msgpack (~> 1.2)
     brakeman (7.1.1)
@@ -167,8 +168,7 @@ GEM
     mini_magick (5.3.1)
       logger
     mini_mime (1.1.5)
-    minitest (6.0.0)
-      prism (~> 1.5)
+    minitest (5.25.5)
     msgpack (1.8.0)
     net-imap (0.6.2)
       date
@@ -349,6 +349,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  blueprinter
   bootsnap
   brakeman
   debug
@@ -357,6 +358,7 @@ DEPENDENCIES
   dotenv-rails
   image_processing (~> 1.2)
   kamal
+  minitest (~> 5.25.0)
   pg (>= 1.1)
   puma (>= 5.0)
   rails (~> 8.0.4)
