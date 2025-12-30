@@ -26,13 +26,22 @@ module Api
 
       private
 
-      def find_commentable
-        # For now only Reviews, but designed for polymorphism
-        params[:commentable_type].constantize.find(params[:commentable_id])
-      rescue NameError, ActiveRecord::RecordNotFound
-        render json: { error: "Target not found" }, status: :not_found
-        nil
-      end
+  # Whitelist of allowed commentable types to prevent unsafe reflection
+  ALLOWED_COMMENTABLE_TYPES = %w[Review].freeze
+
+  def find_commentable
+    # Validate the type against whitelist before using constantize
+    type = params[:commentable_type]
+    unless ALLOWED_COMMENTABLE_TYPES.include?(type)
+      render json: { error: "Invalid commentable type" }, status: :bad_request
+      return nil
+    end
+
+    type.constantize.find(params[:commentable_id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Target not found" }, status: :not_found
+    nil
+  end
 
       def set_review
         @review = Review.find(params[:review_id])

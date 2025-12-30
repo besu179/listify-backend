@@ -1,21 +1,22 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  username: postgres
-  password: 1234
-  host: localhost
+  username: <%= ENV.fetch("LISTFY_DATABASE_USERNAME") { 'postgres' } %>
+  password: <%= ENV.fetch("LISTFY_DATABASE_PASSWORD") { 'postgres' } %>
+  host: <%= ENV.fetch("LISTFY_DATABASE_HOST") { 'localhost' } %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 development:
   <<: *default
-  database: listfy_dev
+  database: listify_dev
 
 test:
-  <<: *default
-  database: listfy_test
+  adapter: sqlite3
+  database: db/listify_test.sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 production:
   <<: *default
-  database: listfy_prod
-  username: postres
+  database: listify_prod
+  username: <%= ENV.fetch("LISTFY_DATABASE_USERNAME") { 'postgres' } %>
   password: <%= ENV['LISTFY_DATABASE_PASSWORD'] %>

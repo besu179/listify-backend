@@ -28,12 +28,22 @@ module Api
 
       private
 
-      def find_likeable
-        params[:likeable_type].constantize.find(params[:likeable_id])
-      rescue NameError, ActiveRecord::RecordNotFound
-        render json: { error: "Target not found" }, status: :not_found
-        nil
-      end
+  # Whitelist of allowed likeable types to prevent unsafe reflection
+  ALLOWED_LIKEABLE_TYPES = %w[Review Song].freeze
+
+  def find_likeable
+    # Validate the type against whitelist before using constantize
+    type = params[:likeable_type]
+    unless ALLOWED_LIKEABLE_TYPES.include?(type)
+      render json: { error: "Invalid likeable type" }, status: :bad_request
+      return nil
+    end
+
+    type.constantize.find(params[:likeable_id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Target not found" }, status: :not_found
+    nil
+  end
     end
   end
 end

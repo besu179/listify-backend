@@ -11,9 +11,6 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.0].define(version: 2025_12_30_045210) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -45,8 +42,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_30_045210) do
   create_table "activities", force: :cascade do |t|
     t.string "action_type"
     t.string "target_type", null: false
-    t.bigint "target_id", null: false
-    t.bigint "actor_id", null: false
+    t.integer "target_id", null: false
+    t.integer "actor_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id"], name: "index_activities_on_actor_id"
@@ -60,7 +57,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_30_045210) do
     t.bigint "deezer_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "artist_id"
+    t.integer "artist_id"
     t.index ["artist_id"], name: "index_albums_on_artist_id"
     t.index ["deezer_id"], name: "index_albums_on_deezer_id"
   end
@@ -75,8 +72,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_30_045210) do
   end
 
   create_table "collection_items", force: :cascade do |t|
-    t.bigint "collection_id", null: false
-    t.bigint "song_id", null: false
+    t.integer "collection_id", null: false
+    t.integer "song_id", null: false
     t.integer "position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -86,7 +83,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_30_045210) do
   end
 
   create_table "collections", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.integer "user_id", null: false
     t.string "title"
     t.text "description"
     t.boolean "public", default: true
@@ -96,9 +93,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_30_045210) do
   end
 
   create_table "comments", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.integer "user_id", null: false
     t.string "commentable_type", null: false
-    t.bigint "commentable_id", null: false
+    t.integer "commentable_id", null: false
     t.text "text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -125,9 +122,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_30_045210) do
   end
 
   create_table "likes", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.integer "user_id", null: false
     t.string "likeable_type", null: false
-    t.bigint "likeable_id", null: false
+    t.integer "likeable_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["likeable_type", "likeable_id"], name: "index_likes_on_likeable"
@@ -136,11 +133,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_30_045210) do
   end
 
   create_table "notifications", force: :cascade do |t|
-    t.bigint "recipient_id", null: false
-    t.bigint "actor_id", null: false
+    t.integer "recipient_id", null: false
+    t.integer "actor_id", null: false
     t.string "action"
     t.string "notifiable_type", null: false
-    t.bigint "notifiable_id", null: false
+    t.integer "notifiable_id", null: false
     t.datetime "read_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -150,7 +147,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_30_045210) do
   end
 
   create_table "refresh_tokens", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.integer "user_id", null: false
     t.string "token"
     t.datetime "expires_at"
     t.datetime "revoked_at"
@@ -161,8 +158,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_30_045210) do
   end
 
   create_table "reviews", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "song_id", null: false
+    t.integer "user_id", null: false
+    t.integer "song_id", null: false
     t.integer "rating"
     t.text "review_text"
     t.datetime "created_at", null: false
@@ -178,10 +175,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_30_045210) do
     t.integer "duration_ms"
     t.bigint "deezer_id"
     t.string "preview_url"
-    t.bigint "album_id"
+    t.integer "album_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "artist_id"
+    t.integer "artist_id"
     t.text "lyrics"
     t.index ["album_id"], name: "index_songs_on_album_id"
     t.index ["artist_id"], name: "index_songs_on_artist_id"

@@ -25,6 +25,17 @@ class User < ApplicationRecord
 
   has_one_attached :profile_picture
 
+  # Provide a consistent profile_picture_url for API consumers.
+  # Prefer ActiveStorage signed URLs when an attachment exists, otherwise
+  # fall back to the legacy `profile_picture_url` DB column for backward compatibility.
+  def profile_picture_url
+    if profile_picture.attached?
+      Rails.application.routes.url_helpers.rails_blob_url(profile_picture, host: ENV.fetch("DEFAULT_URL_HOST", "localhost:3000"))
+    else
+      read_attribute(:profile_picture_url)
+    end
+  end
+
   def jwt_payload
     { "jwt_version" => jwt_version }
   end

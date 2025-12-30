@@ -78,7 +78,7 @@ Incrementing the `jwt_version` on the User record instantly invalidates all acti
 
 ## 🏁 Getting Started
 
-1. **Prerequisites**: Ruby 3.3+, PostgreSQL.
+1. **Prerequisites**: Ruby 3.3+, PostgreSQL (recommended). For local development and testing on Windows, the project supports SQLite3 as a fallback (see `Gemfile`).
 2. **Setup**:
    ```bash
    bundle install

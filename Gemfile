@@ -2,8 +2,10 @@ source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.0.4"
-# Use sqlite3 as the database for Active Record
-gem "sqlite3", ">= 2.1"
+# Use sqlite3 as the database for Active Record (development/test convenience)
+group :development, :test do
+  gem "sqlite3", ">= 2.1"
+end
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
@@ -33,7 +35,10 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
-# gem "rack-cors"
+gem "rack-cors"
+
+# Rack middleware for blocking & throttling abusive requests
+gem "rack-attack"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -58,3 +63,9 @@ gem "devise-jwt"
 gem "blueprinter"
 gem "kaminari"
 gem "active_storage_validations"
+
+gem "faraday"
+
+group :test do
+  gem "webmock"
+end
