@@ -1,5 +1,7 @@
 ENV["RAILS_ENV"] ||= "test"
 ENV["DEVISE_JWT_SECRET_KEY"] = "a" * 100 # Dummy secret for test environment
+# Disable bootsnap compilation in test environment to avoid Windows-specific "Interrupt" issues
+ENV["DISABLE_BOOTSNAP"] = "1" if ENV["RAILS_ENV"] == "test"
 
 require_relative "../config/environment"
 require "rails/test_help"
