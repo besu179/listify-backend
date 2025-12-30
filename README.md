@@ -102,3 +102,16 @@ Incrementing the `jwt_version` on the User record instantly invalidates all acti
 - **Pagination**: Kaminari
 - **Validations**: ActiveStorage Validations
 - **Cloud Storage**: ActiveStorage (libvips)
+
+---
+
+## 📚 Full documentation
+Detailed developer and API documentation is available in the `docs/` directory:
+
+- `docs/architecture.md` — Architecture overview and diagrams
+- `docs/api.md` — API endpoints, examples, authentication, pagination, error formats
+- `docs/developer.md` — Local setup, code style, tooling
+- `docs/testing.md` — Running tests, stubbing external APIs and CI notes
+- `CONTRIBUTING.md` — How to contribute and PR checklist
+
+You can also find an OpenAPI spec at `docs/openapi.yaml` (if present).
