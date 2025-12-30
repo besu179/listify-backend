@@ -4,8 +4,11 @@ require "json"
 class Music::DeezerSyncService < BaseService
   BASE_URL = "https://api.deezer.com"
 
-  def initialize(query)
+  # Accept query and optional params for pagination: limit, index
+  def initialize(query, opts = {})
     @query = query
+    @limit = opts[:limit]
+    @index = opts[:index]
   end
 
   def call
@@ -22,44 +25,78 @@ class Music::DeezerSyncService < BaseService
 
   def connection
     @connection ||= Faraday.new(url: BASE_URL) do |f|
-      f.request :retry, max: 3, interval: 0.5, backoff_factor: 2
       f.adapter Faraday.default_adapter
     end
   end
 
   def fetch_from_deezer
-    resp = connection.get "/search", q: @query
+    params = { q: @query }
+    params[:limit] = @limit if @limit.present?
+    params[:index] = @index if @index.present?
 
-    unless resp.success?
-      raise "Deezer API returned status #{resp.status}"
+    attempts = 0
+    begin
+      loop do
+        attempts += 1
+        resp = connection.get "/search", params
+
+        if resp.status == 429
+          retry_after = resp.headers["retry-after"]
+          sleep_time = retry_after ? retry_after.to_i : (0.5 * attempts)
+
+          if attempts >= 3
+            raise "Deezer rate limited (status 429). Retry-After: #{retry_after || 'unknown'}"
+          end
+
+          sleep sleep_time
+          next
+        end
+
+        unless resp.success?
+          raise "Deezer API returned status #{resp.status}"
+        end
+
+        return JSON.parse(resp.body)
+      end
+    rescue Faraday::ConnectionFailed => e
+      raise "Deezer connection failed: #{e.message}"
     end
-
-    JSON.parse(resp.body)
   end
 
   def process_track(track_data)
-    # Sync Artist
-    artist = Artist.find_or_create_by!(deezer_id: track_data["artist"]["id"]) do |a|
-      a.name = track_data["artist"]["name"]
-    end
+    ActiveRecord::Base.transaction do
+      # Sync Artist (find-or-initialize to allow filling missing attributes on existing records)
+      artist_id = track_data.dig("artist", "id")
+      artist_name = track_data.dig("artist", "name")
+      artist = Artist.find_or_initialize_by(deezer_id: artist_id)
+      artist.name = artist_name if artist.name.blank? && artist_name.present?
+      artist.save!
 
-    # Sync Album
-    album = Album.find_or_create_by!(deezer_id: track_data["album"]["id"]) do |a|
-      a.title = track_data["album"]["title"]
-      a.cover_url = track_data["album"]["cover_medium"]
-      a.artist = artist
-    end
+      # Ensure we have a valid artist name
+      raise "Missing artist name in Deezer payload" if artist.name.blank?
 
-    # Sync Song
-    song = Song.find_or_create_by!(deezer_id: track_data["id"]) do |s|
-      s.title = track_data["title"]
-      s.artist_name = artist.name
-      s.duration_ms = track_data["duration"] * 1000
-      s.preview_url = track_data["preview"]
-      s.album = album
-      s.artist = artist
-    end
+      # Sync Album
+      album_id = track_data.dig("album", "id")
+      album_title = track_data.dig("album", "title")
+      album_cover = track_data.dig("album", "cover_medium")
+      album = Album.find_or_initialize_by(deezer_id: album_id)
+      album.title = album_title if album.title.blank? && album_title.present?
+      album.cover_url = album_cover if album.cover_url.blank? && album_cover.present?
+      album.artist = artist if album.artist.nil?
+      album.save!
 
-    song
+      # Sync Song
+      song_deezer_id = track_data["id"]
+      song = Song.find_or_initialize_by(deezer_id: song_deezer_id)
+      song.title = track_data["title"] if song.title.blank? && track_data["title"].present?
+      song.artist_name = artist.name if song.artist_name.blank?
+      song.duration_ms = track_data["duration"].present? ? track_data["duration"] * 1000 : song.duration_ms
+      song.preview_url = track_data["preview"] if track_data["preview"].present?
+      song.album = album
+      song.artist = artist
+      song.save!
+
+      song
+    end
   end
 end
