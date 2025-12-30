@@ -50,6 +50,14 @@ Rails.application.routes.draw do
         get :explore
       end
     end
+
+    namespace :v2 do
+      resources :relationships, only: [ :create, :destroy ]
+      namespace :feed do
+        get :following
+        get :explore
+      end
+    end
   end
 
   get "up" => "rails/health#show", as: :rails_health_check

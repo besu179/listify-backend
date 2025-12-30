@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_29_160743) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_30_030347) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,7 +60,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_160743) do
     t.bigint "deezer_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "artist_id"
+    t.index ["artist_id"], name: "index_albums_on_artist_id"
     t.index ["deezer_id"], name: "index_albums_on_deezer_id"
+  end
+
+  create_table "artists", force: :cascade do |t|
+    t.string "name"
+    t.text "bio"
+    t.bigint "deezer_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deezer_id"], name: "index_artists_on_deezer_id"
   end
 
   create_table "collection_items", force: :cascade do |t|
@@ -159,7 +170,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_160743) do
     t.bigint "album_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "artist_id"
+    t.text "lyrics"
     t.index ["album_id"], name: "index_songs_on_album_id"
+    t.index ["artist_id"], name: "index_songs_on_artist_id"
     t.index ["deezer_id"], name: "index_songs_on_deezer_id"
   end
 
@@ -182,6 +196,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_160743) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "activities", "users", column: "actor_id"
+  add_foreign_key "albums", "artists"
   add_foreign_key "collection_items", "collections"
   add_foreign_key "collection_items", "songs"
   add_foreign_key "collections", "users"
@@ -192,4 +207,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_160743) do
   add_foreign_key "reviews", "songs"
   add_foreign_key "reviews", "users"
   add_foreign_key "songs", "albums"
+  add_foreign_key "songs", "artists"
 end

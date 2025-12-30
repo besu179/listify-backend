@@ -54,3 +54,4 @@ gem "pg", ">= 1.1"
 
 gem "devise"
 gem "devise-jwt"
+gem "blueprinter"
