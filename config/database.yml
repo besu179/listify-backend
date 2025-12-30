@@ -11,8 +11,9 @@ development:
   database: listify_dev
 
 test:
-  <<: *default
-  database: listify_test
+  adapter: sqlite3
+  database: db/listify_test.sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 production:
   <<: *default
