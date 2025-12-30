@@ -7,22 +7,9 @@ class Song < ApplicationRecord
 
   has_one_attached :cover_art
 
+  # ActiveStorage validations
+  validates :cover_art, content_type: [ "image/png", "image/jpeg", "image/webp" ],
+                        size: { less_than: 5.megabytes }
+
   has_many :reviews, dependent: :destroy
-
-  validate :validate_cover_art
-
-  private
-
-  def validate_cover_art
-    return unless cover_art.attached?
-
-    if cover_art.blob.byte_size > 5.megabytes
-      errors.add(:cover_art, "is too big (max 5MB)")
-    end
-
-    acceptable_types = [ "image/jpeg", "image/png", "image/webp" ]
-    unless acceptable_types.include?(cover_art.content_type)
-      errors.add(:cover_art, "must be a JPEG, PNG or WEBP")
-    end
-  end
 end

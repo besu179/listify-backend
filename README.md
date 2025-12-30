@@ -22,41 +22,57 @@ graph TD
 - **RESTful Discipline**: Resource-oriented routing for social relationships and data management.
 - **Stateless Auth + Refresh**: Short-lived JWTs with secure, rotating Refresh Tokens.
 - **Declarative Serialization**: Lightning-fast JSON responses via `Blueprinter`.
+- **Global Logout**: Identity-level revocation via `jwt_version` on the User model.
 
 ---
 
-## 🚀 Version 2 Features
+## 🔐 Security & Auth Flow
 
-V2 marks the "Redemption Arc" of the project, moving away from simple CRUD to robust system design.
+### JWT Rotation Strategy
+1. **Login**: User receives `access_token` (expires in 1hr) and `refresh_token` (expires in 30 days).
+2. **Refresh**: When `access_token` expires, POST the `refresh_token` to `/api/v2/refresh_tokens`.
+3. **Rotation**: The server revokes the old `refresh_token` and issues a BRAND NEW pair.
 
-### 1. Data Normalization
-Introduced a dedicated `Artist` model. No more "magic strings" for music metadata. All songs and albums are now associated with verified artist records.
-
-### 2. Music Ingestion Pipeline
-Integrated with the **Deezer API** for professional-grade music data sync.
-- `POST /api/v2/songs/sync`: Triggers a background sync of artists, albums, and songs based on search queries.
-
-### 3. Scalable Feeds
-Optimized feed logic using pre-calculated associations and professional serializers, ready for fan-out strategies.
+### Global Logout
+Incrementing the `jwt_version` on the User record instantly invalidates all active JWTs for that account.
 
 ---
 
-## 🔐 Security & Media Safety
+## 📡 API Reference
 
-- **JWT + Refresh Tokens**: Complete rotation strategy to prevent session hijacking.
-- **ActiveStorage Housekeeping**: Strict size (max 5MB) and type (JPEG/PNG/WEBP) validations enforced at the model level to prevent storage abuse.
-
----
-
-## 📡 API Reference (V2)
-
+### Authentication
 | Endpoint | Method | Description |
 | :--- | :--- | :--- |
-| `/api/v1/auth/login` | POST | Login & receive Access + Refresh tokens |
-| `/api/v2/refresh_tokens` | POST | Rotate expired Access Token |
-| `/api/v2/relationships` | POST | Follow a user (Resource-based) |
-| `/api/v2/feed/explore` | GET | Global discovery feed |
-| `/api/v2/songs/sync` | POST | Sync data from Deezer |
+| `/api/v1/auth/login` | POST | Authenticate and receive tokens. |
+| `/api/v2/refresh_tokens` | POST | Rotate tokens using a valid refresh token. |
+
+### Social & Feeds
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/api/v1/feed/following` | GET | Paginated activity feed from followed users. |
+| `/api/v1/feed/explore` | GET | Discovery feed of global activities. |
+| `/api/v1/users/:id/follow` | POST | Follow a user (Resource-based logic). |
+
+### Music Discovery
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/api/v1/songs` | GET | List all songs (Paginated). |
+| `/api/v2/songs/sync` | POST | Trigger Deezer API ingestion. |
+
+---
+
+## 📦 Data Schema (Example Response)
+```json
+{
+  "user": {
+    "id": 1,
+    "username": "daft_punk",
+    "profile_picture_url": "https://..."
+  },
+  "refresh_token": "a1b2c3d4...",
+  "jwt_version": 1
+}
+```
 
 ---
 
@@ -83,4 +99,6 @@ Optimized feed logic using pre-calculated associations and professional serializ
 - **Framework**: Rails 8.0
 - **Serialization**: Blueprinter
 - **Authentication**: Devise + JWT
+- **Pagination**: Kaminari
+- **Validations**: ActiveStorage Validations
 - **Cloud Storage**: ActiveStorage (libvips)

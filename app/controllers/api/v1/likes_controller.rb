@@ -8,12 +8,12 @@ module Api
         likeable = find_likeable
         return unless likeable
 
-        like = current_user.likes.build(likeable: likeable)
+        result = Social::LikeService.call(current_user, likeable)
 
-        if like.save
-          render json: like, status: :created
+        if result.success?
+          render json: result.data, status: :created
         else
-          render json: { error: like.errors.full_messages.to_sentence }, status: :unprocessable_entity
+          render json: { error: result.errors.to_sentence }, status: :unprocessable_entity
         end
       end
 

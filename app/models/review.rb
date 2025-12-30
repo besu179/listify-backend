@@ -1,5 +1,5 @@
 class Review < ApplicationRecord
-  include ActivityLoggable
+  # include ActivityLoggable
   belongs_to :user
   belongs_to :song
 

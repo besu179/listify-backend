@@ -25,22 +25,10 @@ class User < ApplicationRecord
 
   has_one_attached :profile_picture
 
+  def jwt_payload
+    { "jwt_version" => jwt_version }
+  end
+
   # Validations
   validates :username, presence: true, uniqueness: true
-  validate :validate_profile_picture
-
-  private
-
-  def validate_profile_picture
-    return unless profile_picture.attached?
-
-    if profile_picture.blob.byte_size > 5.megabytes
-      errors.add(:profile_picture, "is too big (max 5MB)")
-    end
-
-    acceptable_types = [ "image/jpeg", "image/png", "image/webp" ]
-    unless acceptable_types.include?(profile_picture.content_type)
-      errors.add(:profile_picture, "must be a JPEG, PNG or WEBP")
-    end
-  end
 end

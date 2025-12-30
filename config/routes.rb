@@ -16,12 +16,12 @@ Rails.application.routes.draw do
           patch :read
         end
       end
+
       get "users/me", to: "users#me"
 
-      resources :users, only: [] do
+      resources :users, only: [ :show, :index, :update ] do
+        resource :follow, only: [ :create, :destroy ]
         member do
-          post :follow
-          delete :unfollow
           get :followers
           get :following
         end
@@ -32,13 +32,17 @@ Rails.application.routes.draw do
       end
 
       resources :reviews, only: [ :create, :update, :destroy ] do
-        resources :comments, only: [ :index ], module: :reviews
+        member do
+          post :like
+        end
+        resources :comments, only: [ :create ], module: :reviews
       end
 
+      # Legacy likes/comments support if needed, but standardizing on nested resources
       resources :likes, only: [ :create, :destroy ]
       resources :comments, only: [ :create ]
 
-      resources :collections, only: [ :create ] do
+      resources :collections, only: [ :create, :show, :index, :update, :destroy ] do
         member do
           post "items", to: "collections#add_item"
           delete "items/:song_id", to: "collections#remove_item"

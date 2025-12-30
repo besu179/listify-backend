@@ -7,11 +7,11 @@ module Api
 
       # POST /api/v1/reviews
       def create
-        review = current_user.reviews.build(review_params)
-        if review.save
-          render json: review, status: :created
+        result = Content::CreateReviewService.call(current_user, review_params)
+        if result.success?
+          render json: result.data, status: :created
         else
-          render json: { error: review.errors.full_messages.to_sentence }, status: :unprocessable_entity
+          render json: { error: result.errors.to_sentence }, status: :unprocessable_entity
         end
       end
 

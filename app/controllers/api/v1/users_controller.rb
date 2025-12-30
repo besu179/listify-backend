@@ -17,16 +17,21 @@ module Api
         }
       end
 
+      # The follow/unfollow logic is now handled in RelationshipsController
+      # but we can keep these for V1 compatibility if needed, 
+      # though we should lean on the new service.
       def follow
-        follow = current_user.active_follows.build(following_id: @user.id)
-        if follow.save
+        result = Social::FollowUserService.call(current_user, @user.id)
+        if result.success?
           render json: { success: true, message: "Now following user #{@user.id}" }, status: :ok
         else
-          render json: { error: follow.errors.full_messages.to_sentence }, status: :unprocessable_entity
+          render json: { error: result.errors.to_sentence }, status: :unprocessable_entity
         end
       end
 
       def unfollow
+        # Unfollow is simple enough to stay here or have a service. 
+        # For now, let's just make it explicit.
         follow = current_user.active_follows.find_by(following_id: @user.id)
         if follow&.destroy
           render json: { success: true, message: "Unfollowed user #{@user.id}" }, status: :ok

@@ -9,12 +9,12 @@ module Api
         commentable = find_commentable
         return unless commentable
 
-        comment = current_user.comments.build(commentable: commentable, text: params[:text])
+        result = Content::CreateCommentService.call(current_user, commentable, params[:text])
 
-        if comment.save
-          render json: comment, status: :created
+        if result.success?
+          render json: result.data, status: :created
         else
-          render json: { error: comment.errors.full_messages.to_sentence }, status: :unprocessable_entity
+          render json: { error: result.errors.to_sentence }, status: :unprocessable_entity
         end
       end
 
