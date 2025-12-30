@@ -53,6 +53,12 @@ Rails.application.routes.draw do
 
     namespace :v2 do
       resources :relationships, only: [ :create, :destroy ]
+      resources :refresh_tokens, only: [ :create ]
+      resources :songs, only: [ :index, :show ] do
+        collection do
+          post :sync
+        end
+      end
       namespace :feed do
         get :following
         get :explore

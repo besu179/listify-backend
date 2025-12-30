@@ -4,6 +4,6 @@ class UserSerializer < Blueprinter::Base
   fields :username, :email, :bio, :profile_picture_url
 
   view :simple do
-    only :id, :username, :profile_picture_url
+    fields :id, :username, :profile_picture_url
   end
 end

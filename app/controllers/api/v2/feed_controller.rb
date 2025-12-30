@@ -1,6 +1,6 @@
 module Api
   module V2
-    class FeedsController < ApplicationController
+    class FeedController < ApplicationController
       before_action :authenticate_user!
 
       # GET /api/v2/feed/following
@@ -15,7 +15,7 @@ module Api
                              .where.not(actor_id: current_user.id)
                              .order(created_at: :desc)
                              .limit(20)
-        
+
         # Paginated with basic limit for now
         render json: ActivitySerializer.render(activities), status: :ok
       end

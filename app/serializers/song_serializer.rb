@@ -3,5 +3,5 @@ class SongSerializer < Blueprinter::Base
   fields :title, :duration_ms, :preview_url, :artist_name, :lyrics
 
   association :artist, blueprint: ArtistSerializer
-  association :album, blueprint: ->(album) { { id: album.id, title: album.title, cover_url: album.cover_url } }
+  association :album, blueprint: AlbumSerializer
 end

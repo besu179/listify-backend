@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_30_030347) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_30_031713) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -149,6 +149,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_30_030347) do
     t.index ["recipient_id"], name: "index_notifications_on_recipient_id"
   end
 
+  create_table "refresh_tokens", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "token"
+    t.datetime "expires_at"
+    t.datetime "revoked_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token"], name: "index_refresh_tokens_on_token"
+    t.index ["user_id"], name: "index_refresh_tokens_on_user_id"
+  end
+
   create_table "reviews", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "song_id", null: false
@@ -204,6 +215,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_30_030347) do
   add_foreign_key "likes", "users"
   add_foreign_key "notifications", "users", column: "actor_id"
   add_foreign_key "notifications", "users", column: "recipient_id"
+  add_foreign_key "refresh_tokens", "users"
   add_foreign_key "reviews", "songs"
   add_foreign_key "reviews", "users"
   add_foreign_key "songs", "albums"

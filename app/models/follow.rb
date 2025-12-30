@@ -1,9 +1,9 @@
 class Follow < ApplicationRecord
-  include ActivityLoggable
+  # include ActivityLoggable
   belongs_to :follower, class_name: "User"
   belongs_to :following, class_name: "User"
 
-  after_create :create_notification
+  # after_create :create_notification
 
   validates :follower_id, presence: true
   validates :following_id, presence: true
