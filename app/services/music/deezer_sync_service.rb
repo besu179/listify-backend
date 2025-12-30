@@ -1,4 +1,4 @@
-require "net/http"
+require "faraday"
 require "json"
 
 class Music::DeezerSyncService < BaseService
@@ -10,7 +10,7 @@ class Music::DeezerSyncService < BaseService
 
   def call
     data = fetch_from_deezer
-    return failure("No data found from Deezer") if data["data"].empty?
+    return failure("No data found from Deezer") if data["data"].nil? || data["data"].empty?
 
     processed_items = data["data"].map { |item| process_track(item) }
     success(processed_items)
@@ -20,10 +20,21 @@ class Music::DeezerSyncService < BaseService
 
   private
 
+  def connection
+    @connection ||= Faraday.new(url: BASE_URL) do |f|
+      f.request :retry, max: 3, interval: 0.5, backoff_factor: 2
+      f.adapter Faraday.default_adapter
+    end
+  end
+
   def fetch_from_deezer
-    url = URI("#{BASE_URL}/search?q=#{URI.encode_www_form_component(@query)}")
-    response = Net::HTTP.get(url)
-    JSON.parse(response)
+    resp = connection.get "/search", q: @query
+
+    unless resp.success?
+      raise "Deezer API returned status #{resp.status}"
+    end
+
+    JSON.parse(resp.body)
   end
 
   def process_track(track_data)

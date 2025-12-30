@@ -60,3 +60,9 @@ gem "devise-jwt"
 gem "blueprinter"
 gem "kaminari"
 gem "active_storage_validations"
+
+gem "faraday"
+
+group :test do
+  gem "webmock"
+end
