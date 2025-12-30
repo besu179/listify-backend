@@ -7,7 +7,7 @@ class Content::CreateReviewService < BaseService
   def call
     ActiveRecord::Base.transaction do
       review = @user.reviews.build(@params)
-      
+
       if review.save
         create_activity(review)
         success(review)

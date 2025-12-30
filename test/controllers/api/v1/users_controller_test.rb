@@ -25,6 +25,18 @@ class Api::V1::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal @other.id, body.first["id"]
   end
 
+  test "me returns profile_picture_url when attached" do
+    blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new("fake image"), filename: "avatar.png", content_type: "image/png")
+    @user.profile_picture.attach(blob)
+
+    get api_v1_users_me_url, headers: @headers, as: :json
+    assert_response :success
+
+    body = JSON.parse(response.body)
+    assert body["user"]["profile_picture_url"].present?
+    assert_match /localhost:3000/, body["user"]["profile_picture_url"]
+  end
+
   test "should list followers for a user" do
     # other follows user
     @other.active_follows.create!(following: @user)

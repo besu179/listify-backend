@@ -7,7 +7,7 @@ class Social::LikeService < BaseService
   def call
     ActiveRecord::Base.transaction do
       like = Like.find_or_initialize_by(user: @user, likeable: @likeable)
-      
+
       if like.new_record?
         if like.save
           create_activity(like)

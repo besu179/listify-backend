@@ -22,7 +22,7 @@ module Api
       # POST /api/v2/songs/sync
       # Ingestion endpoint for admins/devs to fetch from Deezer
       def sync
-        result = Music::DeezerSyncService.call(params[:query])
+        result = Music::DeezerSyncService.call(params[:query], limit: params[:limit], index: params[:index])
         if result.success?
           render json: SongSerializer.render(result.data), status: :ok
         else

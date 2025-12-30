@@ -21,15 +21,19 @@ class Music::DeezerSyncServiceTest < ActiveSupport::TestCase
 
     result = Music::DeezerSyncService.new("Daft Punk").call
     assert_not result.success?
-    assert_match /Deezer API returned status 500/, result.errors.first
+    assert_match(/Deezer API returned status 500/, result.errors.first)
   end
 
   test "handles rate limit response" do
-    stub_request(:get, "https://api.deezer.com/search").with(query: hash_including(q: "Daft Punk")).to_return(status: 429, headers: { 'Retry-After' => '10' }, body: "rate limited")
+    stub_request(:get, "https://api.deezer.com/search").with(query: hash_including(q: "Daft Punk")).to_return(status: 429, headers: { "Retry-After" => "10" }, body: "rate limited")
 
-    result = Music::DeezerSyncService.new("Daft Punk").call
+    service = Music::DeezerSyncService.new("Daft Punk")
+    # Stub sleep to avoid waiting during tests using singleton method
+    def service.sleep(_); end
+
+    result = service.call
     assert_not result.success?
-    assert_match /rate limited/i, result.errors.first
+    assert_match(/rate limited/i, result.errors.first)
   end
 
   test "supports pagination params" do

@@ -8,7 +8,7 @@ class Content::CreateCommentService < BaseService
   def call
     ActiveRecord::Base.transaction do
       comment = @user.comments.build(commentable: @commentable, text: @text)
-      
+
       if comment.save
         create_activity(comment)
         create_notification(comment)

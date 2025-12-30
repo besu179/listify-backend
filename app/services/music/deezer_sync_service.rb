@@ -65,15 +65,15 @@ class Music::DeezerSyncService < BaseService
 
   def process_track(track_data)
     ActiveRecord::Base.transaction do
-      # Sync Artist (find-or-initialize to allow filling missing attributes on existing records)
+      # Sync Artist
       artist_id = track_data.dig("artist", "id")
       artist_name = track_data.dig("artist", "name")
-      artist = Artist.find_or_initialize_by(deezer_id: artist_id)
-      artist.name = artist_name if artist.name.blank? && artist_name.present?
-      artist.save!
 
-      # Ensure we have a valid artist name
-      raise "Missing artist name in Deezer payload" if artist.name.blank?
+      raise "Missing artist name in Deezer payload" if artist_name.blank?
+
+      artist = Artist.find_or_initialize_by(deezer_id: artist_id)
+      artist.name = artist_name # Always set name from payload
+      artist.save!
 
       # Sync Album
       album_id = track_data.dig("album", "id")
@@ -83,6 +83,7 @@ class Music::DeezerSyncService < BaseService
       album.title = album_title if album.title.blank? && album_title.present?
       album.cover_url = album_cover if album.cover_url.blank? && album_cover.present?
       album.artist = artist if album.artist.nil?
+      album.artist_name = artist.name if album.artist_name.blank?
       album.save!
 
       # Sync Song
